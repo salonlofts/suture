@@ -163,5 +163,21 @@ module Suture::Surgeon
 
       assert_equal "trollface", error.message
     end
+    
+    def test_run_on_mismatch_when_returns_old_and_raise_disabled
+      mismatch = 'no mismatch'
+      plan = Suture::BuildsPlan.new.build(:face_swap,
+        :old => lambda { |type| :trollface },
+        :new => lambda { |type| :shrugface },
+        :args => [:face],
+        :raise_on_result_mismatch => false,
+        :return_old_on_result_mismatch => true,
+        :run_on_mismatch => lambda{ |plan,old_result,new_result| mismatch = "#{plan.name}: mismatch between #{old_result.value} : #{new_result.value}"}
+      )
+
+      result = @subject.operate(plan)
+
+      assert_equal "face_swap: mismatch between trollface : shrugface" , mismatch
+    end
   end
 end

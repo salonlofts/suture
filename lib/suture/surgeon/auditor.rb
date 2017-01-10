@@ -39,6 +39,7 @@ module Suture::Surgeon
     end
 
     def handle_mismatch(plan, old_result, new_result)
+      plan.run_on_mismatch.call(plan,old_result,new_result) if plan.run_on_mismatch
       log_warning(plan, old_result, new_result)
       if plan.raise_on_result_mismatch
         raise Suture::Error::ResultMismatch.new(plan, new_result, old_result)
